@@ -1,6 +1,7 @@
 pyparsing==2.2.2
 decorator==4.0.10
 six==1.10.0
+pandas==0.23.4
 future
 numpy
 pytest
