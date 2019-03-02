@@ -36,10 +36,10 @@ def get_version(filename):
 
 version = get_version(filename='src/contracts/__init__.py')
 
-setup(name='PyContracts',
-      author="Andrea Censi",
+setup(name='bluecove-contracts',
+      author="BlueCove Developers",
       author_email="censi@mit.edu",
-      url='http://andreacensi.github.com/contracts/',
+      url='http://github.com/bluecoveltd/contracts',
 
       description=description,
       long_description=long_description,
@@ -60,7 +60,7 @@ setup(name='PyContracts',
 
       package_dir={'': 'src'},
       packages=find_packages('src'),
-      install_requires=['pyparsing', 'decorator', 'six', 'future'],
+      install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
       tests_require=['nose'],
       entry_points={},
       )
