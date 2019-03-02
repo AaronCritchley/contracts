@@ -1,7 +1,9 @@
 from .utils import check_contracts_fail
 from contracts import ContractNotRespected, parse, Contract
-from contracts.test_registrar import (semantic_fail_examples,
-    contract_fail_examples, good_examples)
+from contracts.test_registrar import (
+    semantic_fail_examples,
+    contract_fail_examples,
+    good_examples)
 import pickle
 
 
@@ -23,7 +25,6 @@ def check_exception_pickable(contract, value):
 def test_exceptions_are_pickable():
     for contract, value, exact in semantic_fail_examples:  # @UnusedVariable
         yield check_contracts_fail, contract, value, ContractNotRespected
-        #ContractSemanticError
     for contract, value, exact in contract_fail_examples:  # @UnusedVariable
         yield check_contracts_fail, contract, value, ContractNotRespected
 
@@ -52,3 +53,8 @@ def test_contracts_are_pickable():
                 yield check_contract_pickable, c
         else:
             yield check_contract_pickable, contract
+
+
+if __name__ == '__main__':
+    import pytest
+    pytest.main([__file__])

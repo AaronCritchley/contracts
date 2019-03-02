@@ -5,21 +5,7 @@ from contracts.test_registrar import (good_examples, semantic_fail_examples,
                                       syntax_fail_examples, contract_fail_examples)
 from .utils import check_contracts_ok, check_syntax_fail, check_contracts_fail
 
-# Import the other tests
-
-# Import all the symbols needed to eval() the __repr__() output.
 from contracts.library import *  # @UnusedWildImport @UnresolvedImport
-
-
-## If you want to try only some tests, set select to True, and add them below.
-## Remove the other mcdp_lang_tests
-#good_examples[:] = []
-#syntax_fail_examples[:] = []
-#semantic_fail_examples[:] = []
-#contract_fail_examples[:] = []
-#
-## Add the ones you want to do here:
-#from ..test_registrar import  fail, good, syntax_fail, semantic_fail 
 
 
 def test_good():

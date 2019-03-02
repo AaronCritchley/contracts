@@ -1,8 +1,9 @@
 from contracts import parse
 from contracts.interface import Where, ContractSyntaxError
-from contracts.library import *  # @UnusedWildImport
+from contracts.library import (
+    BindVariable, int_variables_contract,
+    misc_variables_contract, List)
 from contracts.syntax import ParseFatalException, ParseException
-import unittest
 
 
 def expression_fails(expression, string, all=True):  # @ReservedAssignment
@@ -30,37 +31,37 @@ def expression_parses(expression, string, all=True):  # @ReservedAssignment
         raise ContractSyntaxError(msg, where=where)
 
 
-class TestParticular(unittest.TestCase):
-
-    def test_variables(self):
-        for s in ['a', 'b', 'c', 'd', 'x', 'y']:
-            self.assertEqual(parse(s), BindVariable(s, object))
-            U = s.upper()
-            self.assertEqual(parse(U), BindVariable(U, int))
-
-    def test_variable_parseable(self):
-        for s in ['a', 'b', 'c', 'd', 'x', 'y']:
-            expression_fails(int_variables_contract, s)
-            expression_parses(misc_variables_contract, s)
-            U = s.upper()
-            expression_parses(int_variables_contract, U)
-            expression_fails(misc_variables_contract, U)
-
-    def test_partial(self):
-        expression_parses(int_variables_contract, 'A', all=False)
-        expression_fails(int_variables_contract, 'A A', all=True)
-        expression_parses(int_variables_contract, 'A', all=True)
-        expression_fails(int_variables_contract, 'A*', all=False)
+def test_variables():
+    for s in ['a', 'b', 'c', 'd', 'x', 'y']:
+        assert parse(s) == BindVariable(s, object)
+        U = s.upper()
+        assert parse(U) == BindVariable(U, int)
 
 
+def test_variable_parseable():
+    for s in ['a', 'b', 'c', 'd', 'x', 'y']:
+        expression_fails(int_variables_contract, s)
+        expression_parses(misc_variables_contract, s)
+        U = s.upper()
+        expression_parses(int_variables_contract, U)
+        expression_fails(misc_variables_contract, U)
 
 
-class TestBindingVsRef(unittest.TestCase):
-    def test_binding_vs_ref(self):
-        self.assertEqual(parse('list[N]'), List(BindVariable('N', int), None))
-
-    def test_binding_vs_ref2(self):
-        self.assertEqual(parse('N'), BindVariable('N', int))
-
+def test_partial():
+    expression_parses(int_variables_contract, 'A', all=False)
+    expression_fails(int_variables_contract, 'A A', all=True)
+    expression_parses(int_variables_contract, 'A', all=True)
+    expression_fails(int_variables_contract, 'A*', all=False)
 
 
+def test_binding_vs_ref():
+    assert parse('list[N]') == List(BindVariable('N', int), None)
+
+
+def test_binding_vs_ref2():
+    assert parse('N') == BindVariable('N', int)
+
+
+if __name__ == '__main__':
+    import pytest
+    pytest.main([__file__])

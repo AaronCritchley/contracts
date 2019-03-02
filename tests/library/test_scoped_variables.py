@@ -1,10 +1,15 @@
-from contracts import ContractException, check, contract, decorate, fail, parse
-from contracts.interface import (ContractNotRespected,
+
+from pytest import raises
+
+from contracts import (
+    ContractException, check, contract,
+    decorate, fail, parse)
+from contracts.interface import (
+    ContractNotRespected,
     ExternalScopedVariableNotFound)
 from contracts.library.simple_values import EqualTo
 from contracts.library.types_misc import CheckType
 from contracts.utils import check_isinstance
-from nose.tools import raises
 
 
 def test_raw_parse():
@@ -25,6 +30,7 @@ def test_value_frozen_at_parsetime():
     check_isinstance(c, EqualTo)
     assert c.rvalue.value == 3
 
+
 def test_holds_reference():
     class Foo(object):
         pass
@@ -42,9 +48,9 @@ def test_algebra():
     assert c.length_contract.rvalue.value == 2
 
 
-@raises(ContractException)
 def test_invalid():
-    parse('$not_found')
+    with raises(ContractException):
+        parse('$not_found')
 
 
 def test_check():
@@ -103,7 +109,6 @@ def test_self_referential():
         raise ValueError()
 
 
-
 def test_class_ref():
     class MyClass():
         def __init__(self, a):
@@ -122,3 +127,7 @@ def test_class_ref():
     else:
         raise ValueError()
 
+
+if __name__ == '__main__':
+    import pytest
+    pytest.main([__file__])

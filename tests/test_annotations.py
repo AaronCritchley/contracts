@@ -1,133 +1,155 @@
 
-# FIXME: how can I not parse this with python2?
+from pytest import raises
 
-import unittest
-from contracts import decorate, ContractException, contract, ContractNotRespected
-
-
-#@PydevCodeAnalysisIgnore
-class Py3kAnnotationsTest(unittest.TestCase):
-
-    def test_malformed(self):
-        def f() -> "":
-            pass
-    
-        self.assertRaises(ContractException, decorate, f)
-
-    def test_malformed2(self):
-        def f() -> "okok":
-            pass
-    
-        self.assertRaises(ContractException, decorate, f)
-
-    def test_malformed3(self):
-        def f() -> 3:
-            pass
-    
-        self.assertRaises(ContractException, decorate, f)
-    
-    def test_not_specified1(self):
-        """ No docstring specified, but annotation is. """
-        def f() -> "int":
-            pass
-    
-    def test_parse_error1(self):
-        def f(a: "int", b: "in"):
-            pass
-    
-        self.assertRaises(ContractException, decorate, f)
-
-    def test_parse_error2(self):
-        def f(a, b) -> "in":
-            pass
-        self.assertRaises(ContractException, decorate, f)
+from contracts import (
+    decorate, ContractException,
+    contract, ContractNotRespected
+)
 
 
-    def not_supported2(self):
-        """ Cannot do with **args """
-        def f(a, **b):
-            """
-                :type a: int
-                :rtype: int
-            """
-            pass
-    
-        self.assertRaises(ContractException, decorate, f)
+def test_malformed():
+    def f() -> "":
+        pass
+
+    with raises(ContractException):
+        decorate(f)
 
 
-    def test_ok1(self):
-        @contract
-        def f(a, b):
-            """ This is good
-                :type a: int
-                :type b: int
-                :rtype: int
-            """
-            pass
+def test_malformed2():
+    def f() -> "okok":
+        pass
 
-    def test_types1(self):
-        @contract
-        def f(a: int, b: int) -> int:
-            return a + b 
+    with raises(ContractException):
+        decorate(f)
 
+
+def test_malformed3():
+    def f() -> 3:
+        pass
+
+    with raises(ContractException):
+        decorate(f)
+
+
+def test_not_specified1():
+    """ No docstring specified, but annotation is. """
+    def f() -> "int":
+        pass
+
+    decorate(f)
+
+
+def test_parse_error1():
+    def f(a: "int", b: "in"):
+        pass
+
+    with raises(ContractException):
+        decorate(f)
+
+
+def test_parse_error2():
+    def f(a, b) -> "in":
+        pass
+
+    with raises(ContractException):
+        decorate(f)
+
+
+def not_supported2():
+    """ Cannot do with **args """
+    def f(a, **b):
+        """
+            :type a: int
+            :rtype: int
+        """
+        pass
+
+    with raises(ContractException):
+        decorate(f)
+
+
+def test_ok1():
+    @contract
+    def f(a, b):
+        """ This is good
+            :type a: int
+            :type b: int
+            :rtype: int
+        """
+        pass
+
+
+def test_types1():
+    @contract
+    def f(a: int, b: int) -> int:
+        return a + b
+
+    assert f(1, 2) == 3
+
+    with raises(ContractNotRespected):
+        f(1.0, 2)
+
+    with raises(ContractNotRespected):
+        f(1, 2.0)
+
+
+def test_types2():
+    """ Testing return value contract """
+    @contract
+    def f(a: int, b: int) -> int:
+        return (a + b) * 2.1
+
+    with raises(ContractNotRespected):
         f(1, 2)
-        self.assertRaises(ContractNotRespected, f, 1.0, 2)
-        self.assertRaises(ContractNotRespected, f, 1, 2.0)
-
-    def test_types2(self):
-        """ Testing return value contract """
-        @contract
-        def f(a: int, b: int) -> int:
-            return (a + b) * 2.1
-
-        self.assertRaises(ContractNotRespected, f, 1, 2)
 
 
-    def test_kwargs(self):
-        def f(a:int, b:int, c:int=7): #@UnusedVariable
-            if c != b:
-                raise Exception()
+def test_kwargs():
+    def f(a:int, b:int, c:int=7): #@UnusedVariable
+        if c != b:
+            raise Exception()
 
-    
-        f2 = decorate(f)
-        f2(0, 7)
-        f2(0, 5, 5)
-        self.assertRaises(Exception, f2, 0, 5, 4)
-        self.assertRaises(Exception, f2, 0, 5)
 
-    def test_varargs(self):
-        def f(a, b, *c: tuple):
-            assert c == (a, b)
-    
-        f2 = decorate(f)
-        f2(0, 7, 0, 7)
+    f2 = decorate(f)
+    f2(0, 7)
+    f2(0, 5, 5)
+    with raises(Exception):
+        f2(0, 5, 4)
 
-    def test_varargs2(self):
-        def f(a, b, *c: """tuple"""
+    with raises(Exception):
+        f2(0, 5)
 
-        ):
-            assert c == (a, b)
-    
-        f2 = decorate(f)
-        f2(0, 7, 0, 7)
 
-    def test_keywords(self):
-        def f(A:int, B:int, **c: dict):
-            assert c['a'] == A
-            assert c['b'] == B
-                
-        f2 = decorate(f)
-        f(0, 7, a=0, b=7)
-        f2(0, 7, a=0, b=7)
-    
-        self.assertRaises(Exception, f2, 0, 5, 0, 6)
-        
-# from unittest.case import SkipTest
+def test_varargs():
+    def f(a, b, *c: tuple):
+        assert c == (a, b)
 
-# class KnownFailuresTest(SkipTest):
-#     def test_kwonly_1(self):
-#         @contract
-#         def f(a: int, b: int, *, c: int = 2) -> int:
-#             return (a + b + c)  
-# 
-#             self.assertRaises(ContractNotRespected, f, 1, 2, 3)
+    f2 = decorate(f)
+    f2(0, 7, 0, 7)
+
+
+def test_varargs2():
+    def f(a, b, *c: """tuple"""
+
+    ):
+        assert c == (a, b)
+
+    f2 = decorate(f)
+    f2(0, 7, 0, 7)
+
+
+def test_keywords():
+    def f(A:int, B:int, **c: dict):
+        assert c['a'] == A
+        assert c['b'] == B
+
+    f2 = decorate(f)
+    f(0, 7, a=0, b=7)
+    f2(0, 7, a=0, b=7)
+
+    with raises(Exception):
+        f2(0, 5, 0, 6)
+
+
+if __name__ == '__main__':
+    import pytest
+    pytest.main([__file__])
