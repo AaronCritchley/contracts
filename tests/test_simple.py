@@ -1,9 +1,7 @@
 import traceback
 
 from contracts.main import parse_contract_string
-from contracts.test_registrar import (good_examples, semantic_fail_examples,
-                                      syntax_fail_examples, contract_fail_examples)
-from .utils import check_contracts_ok, check_syntax_fail, check_contracts_fail
+from .utils import check_contracts_ok, syntax_fail, check_contracts_fail
 
 from contracts.library import *  # @UnusedWildImport @UnresolvedImport
 
@@ -15,7 +13,7 @@ def test_good():
 
 def test_syntax_fail():
     for s in syntax_fail_examples:
-        yield check_syntax_fail, s
+        yield syntax_fail, s
 
 
 def test_semantic_fail():

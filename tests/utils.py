@@ -46,18 +46,18 @@ def check_contracts_fail(contract, value, error=ContractNotRespected):
         return e
 
 
-def check_syntax_fail(string):
+def syntax_fail(string):
     assert isinstance(string, six.string_types)
 
     try:
         parsed_contract = parse_contract_string(string)
         msg = 'I would not expect to parse %r.' % string
         msg += ' contract:         %s\n' % parsed_contract
-        raise Exception(msg)
+        return False
 
     except ContractSyntaxError as e:
         # Try generation of strings:
         s = "%r" % e  # @UnusedVariable
         s = "%s" % e  # @UnusedVariable
-        pass
+        return True
 

@@ -1,5 +1,4 @@
-from contracts.test_registrar import (good_examples, semantic_fail_examples,
-                                      contract_fail_examples)
+
 from contracts import parse, ContractSyntaxError
 
 

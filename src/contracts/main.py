@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import sys
 import types
 from collections import defaultdict
+from typing import List
 
 import six
 
@@ -18,7 +19,7 @@ from .interface import (
     ContractSyntaxError, MissingContract, Where, describe_value)
 
 
-def check_contracts(contracts, values, context_variables=None):
+def check_contracts(contracts: List, values: List, context_variables=None):
     """
         Checks that the values respect the contract.
         Not a public function -- no friendly messages.
