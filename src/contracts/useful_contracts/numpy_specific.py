@@ -49,3 +49,10 @@ def np_zeroshape_array(x):
 
 new_contract('np_scalar', 'np_zeroshape_array|np_scalar_type')
 
+
+def not_null(x):
+    return np.all(~np.isnan(x))
+
+
+new_contract('not_null', not_null)
+

@@ -1,8 +1,8 @@
 import six
 
-from ..interface import (ContractSyntaxError, describe_value,
-                         ContractNotRespected)
-from ..main import parse_contract_string, check_contracts
+from contracts.interface import (ContractSyntaxError, describe_value,
+                                 ContractNotRespected)
+from contracts.main import parse_contract_string, check_contracts
 
 
 def check_contracts_ok(contract, value):
