@@ -46,7 +46,6 @@ def can_accept_exactly_one_argument(callable_thing):
         return True, None
 
 
-
 def get_f_from_callable(callable_thing):
     if inspect.ismethod(callable_thing):  # bound method
         f = callable_thing.__func__
@@ -59,10 +58,12 @@ def get_f_from_callable(callable_thing):
             # args = ('test',)
     return f
 
+
 def get_callable_fullargspec(callable_thing):
     f = get_f_from_callable(callable_thing)
     spec = getfullargspec(f)
     return spec
+
 
 def can_accept_at_least_one_argument(callable_thing):
     """ 
@@ -108,6 +109,7 @@ def can_accept_self_plus_one_argument(callable_thing):
 class InvalidArgs(Exception):
     pass
 
+
 def check_callable_accepts_these_arguments(callable_thing, args, kwargs):
     """ Checks that a callable can accept the args and kwargs. 
     
@@ -125,5 +127,3 @@ def check_callable_accepts_these_arguments(callable_thing, args, kwargs):
         # return False
     else:
         return True
-
-    return False

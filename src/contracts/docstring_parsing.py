@@ -69,7 +69,8 @@ class DocStringInfo(object):
 
     @staticmethod
     def parse(docstring):
-        assert docstring is not None
+        if docstring is None:
+            return DocStringInfo("", params={}, returns=[])
 
         param_keys = ['param', 'parameter', 'arg',
                       'argument', 'key', 'keyword']

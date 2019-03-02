@@ -1,21 +1,23 @@
 from __future__ import unicode_literals
 import sys
 import types
+from collections import defaultdict
 
 import six
 
 from .backported import getcallargs, getfullargspec
 from .docstring_parsing import Arg, DocStringInfo
 from .enabling import all_disabled
-from .inspection import (can_accept_at_least_one_argument, can_accept_self,
+from .inspection import (
+    can_accept_at_least_one_argument,
+    can_accept_self,
     can_be_used_as_a_type)
-from .interface import (CannotDecorateClassmethods, Contract,
+from .interface import (
+    CannotDecorateClassmethods, Contract,
     ContractDefinitionError, ContractException, ContractNotRespected,
     ContractSyntaxError, MissingContract, Where, describe_value)
 
 
-# from .library import (CheckCallable, Extension, SeparateContext,
-#     identifier_expression)
 def check_contracts(contracts, values, context_variables=None):
     """
         Checks that the values respect the contract.
@@ -191,50 +193,69 @@ you can achieve the same goal by inverting the two decorators:
         raise CannotDecorateClassmethods(msg)
 
     all_args = get_all_arg_names(function_)
+    accepts_dict = defaultdict(list)
+    returns = []
+    returns_parsed = []
 
+    # Decorator args section
+    #
     if kwargs:
 
-        returns = kwargs.pop('returns', None)
+        value = kwargs.pop('returns', None)
+        if value:
+            returns.append(value)
 
         for kw in kwargs:
             if not kw in all_args:
                 msg = 'Unknown parameter %r; I know %r.' % (kw, all_args)
                 raise ContractException(msg)
 
-        accepts_dict = dict(**kwargs)
-
-    else:
-        # Py3k: check if there are annotations
-        annotations = get_annotations(function_)
-
-        if annotations:
-            if 'return' in annotations:
-                returns = annotations['return']
-                del annotations['return']
+        for k, v in dict(**kwargs).items():
+            if isinstance(v, list):
+                # This gets hit when a contract is used in an ABC or
+                # other metaclass
+                accepts_dict[k].extend(v)
             else:
-                returns = None
+                accepts_dict[k].append(v)
 
-            accepts_dict = annotations
-        else:
-            # Last resort: get types from documentation string.
-            if function_.__doc__ is None:
-                # XXX: change name
-                raise ContractException(
-                    'You did not specify a contract, nor I can '
-                    'find a docstring for %r.' % function_)
+    # Type Annotations section
+    annotations = get_annotations(function_)
 
-            accepts_dict, returns = parse_contracts_from_docstring(function_)
+    if annotations:
+        if 'return' in annotations:
+            returns.append(annotations['return'])
+            del annotations['return']
 
-            if not accepts_dict and not returns:
-                raise ContractException('No contract specified in docstring.')
+        for k, v in annotations.items():
+            accepts_dict[k].append(v)
 
-    if returns is None:
-        returns_parsed = None
-    else:
-        returns_parsed = parse_flexible_spec(returns)
+    # Docstring section
+    #
+    no_returns = not returns
+    no_args = not len(accepts_dict)
+    no_annotations = not len(annotations)
+    no_docstring = function_.__doc__ is None
+    if no_returns and no_args and no_annotations and no_docstring:
+        raise ContractException(
+            'You did not specify a contract, nor I can '
+            'find a docstring for %r.' % function_)
 
-    accepts_parsed = dict([(x, parse_flexible_spec(accepts_dict[x]))
-                           for x in accepts_dict])
+    update_accepts, update_returns = parse_contracts_from_docstring(function_)
+
+    for k, v in update_accepts.items():
+        accepts_dict[k].append(v)
+
+    if update_returns is not None:
+        returns.append(update_returns)
+
+    if not accepts_dict and not returns:
+        raise ContractException('No contracts specified in docstring or via type annotations.')
+
+    if returns is not None:
+        returns_parsed = [parse_flexible_spec(x) for x in returns]
+
+    accepts_parsed = dict([(k, [parse_flexible_spec(y) for y in v])
+                           for k, v in accepts_dict.items()])
 
     is_bound_method = 'self' in all_args
 
@@ -259,24 +280,28 @@ you can achieve the same goal by inverting the two decorators:
 
         for arg in all_args:
             if arg in accepts_parsed:
-                try:
-                    accepts_parsed[arg]._check_contract(context, bound[arg], silent=False)
-                except ContractNotRespected as e:
-                    msg = ('Breach for argument %r to %s.\n'
-                           % (arg, get_nice_function_display()))
-                    e.error = msg + e.error
-                    raise e
+                for check_item in accepts_parsed[arg]:
+                    try:
+                        check_item._check_contract(
+                            context, bound[arg], silent=False
+                        )
+                    except ContractNotRespected as e:
+                        msg = ('Breach for argument %r to %s.\n'
+                               % (arg, get_nice_function_display()))
+                        e.error = msg + e.error
+                        raise e
 
         result = function_(*args, **kwargs)
 
-        if returns_parsed is not None:
-            try:
-                returns_parsed._check_contract(context, result, silent=False)
-            except ContractNotRespected as e:
-                msg = ('Breach for return value of %s.\n'
-                       % (get_nice_function_display()))
-                e.error = msg + e.error
-                raise e
+        if returns_parsed:
+            for item in returns_parsed:
+                try:
+                    item._check_contract(context, result, silent=False)
+                except ContractNotRespected as e:
+                    msg = ('Breach for return value of %s.\n'
+                           % (get_nice_function_display()))
+                    e.error = msg + e.error
+                    raise e
 
         return result
 
@@ -648,19 +673,6 @@ def new_contract_impl(identifier, condition):
             raise ValueError(msg)
     else:
         Extension.registrar[identifier] = contract
-
-    # Before, we check that we can parse it now
-    # - not anymore, because since there are possible args/kwargs,
-    # - it might be that the keyword alone is not a valid contract
-    if False:
-        try:
-            c = parse_contract_string(identifier)
-            expected = Extension(identifier)
-            assert c == expected, \
-                'Expected %r, got %r.' % (c, expected)  # pragma: no cover
-        except ContractSyntaxError:  # pragma: no cover
-            #assert False, 'Cannot parse %r: %s' % (identifier, e)
-            raise
 
     return contract
 

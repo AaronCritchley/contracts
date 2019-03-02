@@ -178,6 +178,7 @@ class DecoratorTests(unittest.TestCase):
         @contract(a='int', b='int', returns='int')
         def f(a, b):  # @UnusedVariable
             return 2.0
+
         self.assertRaises(ContractNotRespected, f, 1, 2)
 
     def test_check_it_works2(self):
