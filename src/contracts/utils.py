@@ -5,7 +5,6 @@ import warnings
 
 import six
 
-from .interface import describe_type, describe_value  # @UnusedImport # old interface
 
 __all__ = [
     'indent',
@@ -14,6 +13,7 @@ __all__ = [
     'raise_wrapped',
     'raise_desc',
     'check_isinstance',
+    'ignore_typeerror'
 ]
 
 
@@ -39,7 +39,7 @@ def indent(s, prefix, first=None):
     prefix = ' ' * (m - len(prefix)) + prefix
     first = ' ' * (m - len(first)) + first
 
-    # differnet first prefix
+    # different first prefix
     res = [u'%s%s' % (prefix, line.rstrip()) for line in lines]
     res[0] = u'%s%s' % (first, lines[0].rstrip())
     return '\n'.join(res)

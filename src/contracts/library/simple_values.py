@@ -59,5 +59,3 @@ class SimpleRValue(RValue):
 
     def eval(self, context):  # @UnusedVariable @ReservedAssignment
         return self.value
-
-

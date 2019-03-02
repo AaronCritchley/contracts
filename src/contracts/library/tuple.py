@@ -1,11 +1,11 @@
 from ..interface import Contract, ContractNotRespected
-from ..syntax import(add_contract, W, contract_expression, O, S, ZeroOrMore,
-                      Group, add_keyword, Keyword)
+from ..syntax import(
+    add_contract, W, contract_expression, O, S,
+    ZeroOrMore, Group, add_keyword, Keyword)
 from .compositions import or_contract
 
 
 class Tuple(Contract):
-
     def __init__(self, length=None, elements=None, where=None):
         Contract.__init__(self, where)
         self.length = length
@@ -58,7 +58,6 @@ class Tuple(Contract):
     def parse_action(s, loc, tokens):
         where = W(s, loc)
         length = tokens.get('length', [None])[0]
-#        elements = tokens.get('elements', [None])[0]
 
         if 'elements' in tokens:
             elements = list(tokens['elements'])
@@ -73,9 +72,6 @@ class Tuple(Contract):
                 assert isinstance(e, Contract), ("Wrong type %s (%r)"
                                                  % (type(e), e))
         return Tuple(length, elements, where=where)
-
-
-# if you use contract instead of simple_contract, it will be matched as And
 
 
 inside = (S('(') - contract_expression - S(')')) | or_contract
@@ -94,4 +90,3 @@ tuple_contract.setName('tuple contract')
 
 add_contract(tuple_contract.setParseAction(Tuple.parse_action))
 add_keyword('tuple')
-

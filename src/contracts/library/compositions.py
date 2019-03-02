@@ -8,6 +8,7 @@ NOT_GLYPH = '!'
 AND_GLYPH = ','
 OR_GLYPH = '|'
 
+
 class Logical(object):
     def __init__(self, glyph, precedence):
         self.glyph = glyph
@@ -21,6 +22,7 @@ class Logical(object):
         if isinstance(x, Logical) and x.precedence < self.precedence:
             return '(%s)' % x
         return '%s' % x
+
 
 class OR(Logical, Contract):
     def __init__(self, clauses, where=None):
@@ -45,7 +47,6 @@ class OR(Logical, Contract):
                 pass
         
         return False
-
 
     def check_contract(self, context, value, silent):
         orig = context.copy()
@@ -78,8 +79,6 @@ class OR(Logical, Contract):
             msg = self._format_exceptions(exceptions)
             raise ContractNotRespected(contract=self, error=msg,
                         value=value, context=context)
-
-
 
     def _format_exceptions(self, exceptions):
         msg = ('Could not satisfy any of the %d clauses in %s.'

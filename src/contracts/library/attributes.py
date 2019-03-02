@@ -34,10 +34,9 @@ class Attr(Contract):
     def parse_action(s, loc, tokens):
         where = W(s, loc)
         attrs = tokens.get('attrs', None)
-        # Python 3 only
-        # attrs = {k: v for k, v in attrs.items()}
-        attrs = dict([(k, v) for k, v in attrs.items()])
+        attrs = {k: v for k, v in attrs.items()}
         return Attr(attrs, where=where)
+
 
 attr_spec = Dict(
         delimitedList(

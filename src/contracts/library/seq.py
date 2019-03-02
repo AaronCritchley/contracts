@@ -1,14 +1,13 @@
-from ..interface import Contract, ContractNotRespected
-from ..syntax import (add_contract, W, contract_expression, O, S, add_keyword,
-    Keyword)
+
 import collections
+
+import numpy as np
 from past.builtins import xrange
 
-try:
-    import numpy
-    has_numpy = True
-except:
-    has_numpy = False
+from ..interface import Contract, ContractNotRespected
+from ..syntax import (
+    add_contract, W, contract_expression, 
+    O, S, add_keyword, Keyword)
 
 
 class Seq(Contract):
@@ -20,7 +19,7 @@ class Seq(Contract):
         self.elements_contract = elements_contract
 
     def check_contract(self, context, value, silent):
-        if has_numpy and isinstance(value, numpy.ndarray):
+        if isinstance(value, np.ndarray):
             # TODO: check basic datatypes
             # use value.size and value.flat for iteration
             if self.length_contract is not None:
@@ -30,8 +29,8 @@ class Seq(Contract):
                 n = value.size
                 for i in xrange(n):
                     element = value.flat[i]
-                    if ((element.dtype == numpy.int32) or
-                        (element.dtype == numpy.int64)):
+                    if ((element.dtype == np.int32) or
+                        (element.dtype == np.int64)):
                         element = int(element)
                     # XXX: hack
                     self.elements_contract._check_contract(context, element, silent)

@@ -11,6 +11,10 @@ env:
   - NUMPY=1.14
   - NUMPY=1.15
   - NUMPY=1.16
+matrix:
+  exclude:
+    - python: 3.7
+      env: NUMPY=1.14
 install:
   - pip install -r requirements.txt
   - pip install numpy==$NUMPY

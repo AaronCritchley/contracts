@@ -3,6 +3,7 @@ import six
 from ..interface import Contract, ContractNotRespected, RValue, describe_value
 from ..syntax import (W, oneOf, FollowedBy, NotAny)
 
+
 class BindVariable(Contract):
 
     def __init__(self, variable, allowed_types, where=None):
@@ -79,6 +80,7 @@ class VariableRef(RValue):
         where = W(s, loc)
         return VariableRef(tokens[0], where=where)
 
+
 alphabetu = 'A B C D E F G H I J K L M N O P Q R S T U W V X Y Z '
 alphabetl = 'a b c d e f g h i j k l m n o p q r s t u w v x y z '
 
@@ -114,5 +116,3 @@ int_variables_contract = int_variables2.setParseAction(
                                                 BindVariable.parse_action(int))
 misc_variables_contract = misc_variables2.setParseAction(
                                             BindVariable.parse_action(object))
-
-
