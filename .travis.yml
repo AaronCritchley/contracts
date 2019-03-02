@@ -12,7 +12,7 @@ env:
   - NUMPY=1.15
   - NUMPY=1.16
 install:
-  - pip install -e requirements.txt
+  - pip install -r requirements.txt
   - pip install numpy==$NUMPY
 script:
   - pytest
