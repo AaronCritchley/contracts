@@ -5,50 +5,6 @@ from .utils import check_contracts_ok, syntax_fail, check_contracts_fail
 
 from contracts.library import *  # @UnusedWildImport @UnresolvedImport
 
-
-def test_good():
-    for contract, value, exact in good_examples:  # @UnusedVariable
-        yield check_contracts_ok, contract, value
-
-
-def test_syntax_fail():
-    for s in syntax_fail_examples:
-        yield syntax_fail, s
-
-
-def test_semantic_fail():
-    for contract, value, exact in semantic_fail_examples:  # @UnusedVariable
-        yield check_contracts_fail, contract, value, ContractNotRespected
-
-
-def test_contract_fail():
-    for contract, value, exact in contract_fail_examples:  # @UnusedVariable
-        yield check_contracts_fail, contract, value, ContractNotRespected
-
-
-# Checks that we can eval() the __repr__() value and 
-# we get an equivalent object. 
-def test_repr():
-    allc = (good_examples + semantic_fail_examples + contract_fail_examples)
-    for contract, value, exact in allc:  # @UnusedVariable
-        if isinstance(contract, list):
-            for c in contract:
-                yield check_good_repr, c
-        else:
-            yield check_good_repr, contract
-
-
-#  Checks that we can reconvert the __str__() value and we get the same. 
-def test_reconversion():
-    allc = (good_examples + semantic_fail_examples + contract_fail_examples)
-    for contract, _, exact in allc:
-        if isinstance(contract, list):
-            for c in contract:
-                yield check_recoversion, c, exact
-        else:
-            yield check_recoversion, contract, exact
-
-
 def check_good_repr(c):
     """ Checks that we can eval() the __repr__() value and we get
         an equivalent object. """
@@ -68,7 +24,7 @@ def check_good_repr(c):
             'Repr gives different object:\n  %r !=\n  %r' % (parsed, reeval)
 
 
-def check_recoversion(s, exact):
+def check_reconversion(s, exact):
     """ Checks that we can eval() the __repr__() value and we get
         an equivalent object. """
     parsed = parse_contract_string(s)
@@ -93,7 +49,3 @@ def check_recoversion(s, exact):
             msg += ('   parsed the first time as: %r\n' % parsed)
             msg += ('                and then as: %r' % reconv)
             assert s2 == s, msg
-
-
-
-

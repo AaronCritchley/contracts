@@ -3,13 +3,10 @@ import os
 from setuptools import setup, find_packages
 
 description = (
-    'PyContracts is a Python package that allows to declare '
-    'constraints on function parameters and return values. '
-    'Contracts can be specified using Python3 annotations, '
-    'in a decorator, or inside a docstring :type: and :rtype: tags. '
-    'PyContracts supports a basic type system, variables binding, '
-    'arithmetic constraints, and has several specialized '
-    'contracts (notably for Numpy arrays), as well as an extension API.')
+    'blue-contracts is a hard fork of the PyContracts library'
+    'from Andrea Censi. This fork has been updated to allow '
+    'multiple contract definitions on a function, as well as'
+    'removing Python 2.x support and other updates.')
 
 
 def read(fname):
@@ -38,7 +35,6 @@ version = get_version(filename='src/contracts/__init__.py')
 
 setup(name='bluecove-contracts',
       author="BlueCove Developers",
-      author_email="censi@mit.edu",
       url='http://github.com/bluecoveltd/contracts',
 
       description=description,
@@ -56,11 +52,11 @@ setup(name='bluecove-contracts',
       ],
 
       version=version,
-      download_url='http://github.com/AndreaCensi/contracts/tarball/%s' % version,
+      download_url='http://github.com/bluecoveltd/contracts/tarball/%s' % version,
 
       package_dir={'': 'src'},
       packages=find_packages('src'),
       install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
-      tests_require=['nose'],
+      tests_require=['pytest'],
       entry_points={},
       )
