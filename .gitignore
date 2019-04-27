@@ -24,3 +24,4 @@ src/.noseids
 tmp_tests
 .noseids
 .pytest_cache
+.idea
