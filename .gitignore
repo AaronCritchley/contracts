@@ -20,7 +20,7 @@ dist
 *.pyo
 *.tmp*
 src/.noseids
-*coverage*
+.coverage
 tmp_tests
 .noseids
 .pytest_cache
