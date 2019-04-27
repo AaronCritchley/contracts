@@ -23,4 +23,5 @@ script:
   - pytest tests
   # - sphinx-build docs/source docs/build #-W
 after_success:
+  - pip install codecov
   - codecov
