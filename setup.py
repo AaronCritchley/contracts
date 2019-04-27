@@ -31,7 +31,7 @@ def get_version(filename):
     return version
 
 
-version = get_version(filename='src/contracts/__init__.py')
+version = get_version(filename='contracts/__init__.py')
 
 setup(name='bluecove-contracts',
       author="BlueCove Developers",
@@ -54,8 +54,7 @@ setup(name='bluecove-contracts',
       version=version,
       download_url='http://github.com/bluecoveltd/contracts/tarball/%s' % version,
 
-      package_dir={'': 'src'},
-      packages=find_packages('src'),
+      packages=find_packages(exclude=['tests', 'tests.*']),
       install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
       tests_require=['pytest'],
       entry_points={},
