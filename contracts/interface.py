@@ -464,7 +464,7 @@ class Contract(with_metaclass(ABCMeta, object)):
             All the symbols you need to eval() the expression are in
             :py:mod:`contracts.library`.
 
-            >>> from contracts import *
+            >>> from contracts.library import *
             >>> contract == eval("%r"%contract)
             True
 
