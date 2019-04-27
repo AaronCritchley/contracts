@@ -4,10 +4,9 @@ from pyparsing import alphanums, Word
 
 __all__ = ['IsInstance', 'isinstance_contract']
 
+
 class IsInstance(Contract):
-    
     """ Checks that one of the superclasses have the specified name. """
-     
     def __init__(self, name, where=None):
         Contract.__init__(self, where)
         self.name = name
@@ -46,9 +45,9 @@ def get_all_super_names(value):
     """ Returns name of class, list of names of supers """
     if hasattr(value, '__class__'):
         # old style class
-        klass = value.__class__
-        class_name = klass.__name__
-        bases = get_oldstyle_bases(klass)
+        cls = value.__class__
+        class_name = cls.__name__
+        bases = get_oldstyle_bases(cls)
         bases_names = [x.__name__ for x in bases]
     else:
         # new style
@@ -57,16 +56,18 @@ def get_all_super_names(value):
         bases_names = [b.__name__ for b in t.mro()]
     return class_name, bases_names
 
-def get_oldstyle_bases(klass):
-    todo = [klass]
+
+def get_oldstyle_bases(cls):
+    todo = [cls]
     res = []
     while todo:
         x = todo.pop(0)
         res.append(x)
         for b in x.__bases__:
-            if not b in res:
+            if b not in res:
                 todo.append(b)
     return res
+
 
 Identifier = Word(alphanums + '_')
 

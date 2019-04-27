@@ -12,6 +12,7 @@ def is_function_or_static(f):
     is_classmethod = isinstance(f, classmethod)
     return is_normal_function or is_staticmethod or is_classmethod
 
+
 class ContractsMeta(ABCMeta):
     """
         This metaclass lets the subclasses inherit the specifications.
@@ -28,13 +29,9 @@ class ContractsMeta(ABCMeta):
             is_classmethod = isinstance(f, classmethod)
 
             if not (is_normal_function or is_staticmethod or is_classmethod):
-                # print('skipping %s:%s, %s' % (clsname, k, f))
                 continue
             if k == '__init__':
                 continue
-
-            # this_function = '%s:%s()' % (clsname, k)  # @UnusedVariable
-            # print('considering %s' % this_function)
 
             superclasses = cls.mro()[1:]
             for b in superclasses:
@@ -42,17 +39,13 @@ class ContractsMeta(ABCMeta):
                     f0 = b.__dict__[k]
                     if is_function_or_static(f0):
                         if isinstance(f0, classmethod):
-                            # print('found ancestor classmethod')
                             pass
                         elif isinstance(f0, staticmethod):
-                            # print('found ancestor staticmethod')
                             pass
                         else:
                             assert isinstance(f0, FunctionType)
                             if '__contracts__' in f0.__dict__:
                                 spec = f0.__contracts__
-                                # msg = 'inherit contracts for %s:%s() from %s' % (clsname, k, b.__name__)
-                                # print(msg)
                                 # TODO: check that the contracts are a subtype
                                 from contracts import ContractException
                                 try:
@@ -73,13 +66,10 @@ class ContractsMeta(ABCMeta):
                     else:
                         pass
                 else:
-                    # print(' X not found in %s' % b.__name__)
                     pass
-
-
             else:
                 pass
-                # print(' -> No inheritance for %s' % this_function)
+
 
 # This function is taken from six.
 # https://bitbucket.org/gutworth/six

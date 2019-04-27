@@ -1,10 +1,11 @@
+
 from ..interface import Contract, ContractNotRespected
-from ..syntax import (W, contract_expression, O, S, add_contract, add_keyword,
-    Keyword)
+from ..syntax import (
+    W, contract_expression, O, S,
+    add_contract, add_keyword, Keyword)
 
 
 class Dict(Contract):
-
     def __init__(self, length=None, key_c=None, value_c=None, where=None):
         Contract.__init__(self, where)
         self.length = length

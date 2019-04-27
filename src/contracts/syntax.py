@@ -1,8 +1,10 @@
-from numbers import Number
+
 import math
 
+import numpy as np
+from numbers import Number
 
-# All the imports from pyparsing go here
+
 from pyparsing import (delimitedList, Forward, Literal,
                        stringEnd, nums, Word, CaselessLiteral, Combine,
                        Optional, Suppress, OneOrMore, ZeroOrMore, opAssoc,
@@ -13,16 +15,9 @@ from pyparsing import (delimitedList, Forward, Literal,
                        MatchFirst, Keyword, Group, White, lineno, col)
 
 
-# from .pyparsing_utils import myOperatorPrecedence
-
-
 # Enable memoization (much faster!)
-if True:
-    ParserElement.enablePackrat()
-else:
-    # Pyparsing 2.0
-    from pyparsing import infixNotation
-    myOperatorPrecendence = infixNotation
+ParserElement.enablePackrat()
+
 
 from .interface import Where
 
@@ -46,9 +41,8 @@ def add_keyword(x):
     """
     ParsingTmp.keywords.append(x)
 
+
 W = Where
-
-
 O = Optional
 S = Suppress
 
@@ -65,20 +59,16 @@ pi = Keyword('pi').setParseAction(
     lambda tokens: SimpleRValue(math.pi, 'pi'))  # @UnusedVariable
 
 
-try:
-    import numpy
-except ImportError:
-    numpy = None
-
 def isnumber(x):
     # These are scalar quantities that we can compare (=,>,>=, etc.)
     if isinstance(x, Number):
         return True
 
-    if numpy is not None and isinstance(x, numpy.number):
+    if isinstance(x, np.number):
         return True
 
     return False
+
 
 rvalue = Forward()
 rvalue.setName('rvalue')

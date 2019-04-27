@@ -1,11 +1,11 @@
 from ..interface import Contract, ContractNotRespected
-from ..syntax import (W, add_contract, contract_expression, S, Keyword,
-    add_keyword)
+from ..syntax import (
+    W, add_contract, contract_expression,
+    S, Keyword, add_keyword)
 from numbers import Number
 
 
 class CheckType(Contract):
-
     def __init__(self, types, type_string=None, where=None):
         from ..main import can_be_used_as_a_type  # XXX: make it better
         assert can_be_used_as_a_type(types)
@@ -54,7 +54,6 @@ add_contract(Keyword('bool').setParseAction(CheckType.parse_action(bool)))
 add_keyword('bool')
 
 
-
 class Type(Contract):
     def __init__(self, type_constraint, where=None):
         Contract.__init__(self, where)
@@ -82,5 +81,3 @@ type_contract = (Keyword('type') - S('(')
 
 add_contract(type_contract.setParseAction(Type.parse_action))
 add_keyword('type')
-
-

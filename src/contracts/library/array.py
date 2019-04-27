@@ -1,15 +1,19 @@
-from ..interface import Contract, ContractNotRespected, describe_type
-from ..pyparsing_utils import myOperatorPrecedence
-from ..syntax import (add_contract, W, contract_expression, O, S, rvalue,
-    simple_contract, ZeroOrMore, Literal, MatchFirst, opAssoc, FollowedBy, NotAny,
-    Keyword, add_keyword, Word)
-from .array_ops import (ArrayOR, ArrayAnd, DType, ArrayConstraint,
-    ArrayORCustomString)
+import numpy
+from numpy import ndarray
+from pyparsing import Or
+
+from .array_ops import (
+    ArrayAnd, ArrayConstraint, ArrayOR,
+    ArrayORCustomString, DType)
 from .compositions import And, OR
 from .suggester import create_suggester
-from numpy import ndarray, dtype
-import numpy
-from pyparsing import operatorPrecedence, Or
+from ..interface import (
+    Contract, ContractNotRespected, describe_type)
+from ..pyparsing_utils import myOperatorPrecedence
+from ..syntax import (
+    FollowedBy, Keyword, Literal, NotAny, O, S, W,
+    Word, ZeroOrMore, add_contract, add_keyword,
+    contract_expression, opAssoc, rvalue, simple_contract)
 
 
 class Array(Contract):

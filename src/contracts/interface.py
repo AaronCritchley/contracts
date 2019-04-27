@@ -29,16 +29,7 @@ class Where(object):
             msg = ('Invalid character loc %s for string of len %s.' %
                    (character, len(string)))
             raise_desc(ValueError, msg, string=string.__repr__())
-            # Advance pointer if whitespace
-            # if False:
-            #     while string[character] == ' ':
-            #         if character_end is not None:
-            #             assert character <= character_end
-            #         if (character < (len(string) - 2)) and ((character_end is None)
-            #                                             or (character <= character_end - 1)):
-            #             character += 1
-            #         else:
-            #             break  
+
         self.line, self.col = line_and_col(character, string)
 
         if character_end is not None:
@@ -603,16 +594,9 @@ def describe_value_multiline(x):
             return x.__repr__()
     else:
         if isinstance(x, six.string_types):
-            if x == '': return "''"
+            if x == '':
+                return "''"
             return x
-        # XXX: this does not represent strings
-
-        #             if '\n' in x:
-        #                 # long multiline
-        #                 return x
-        #             else:
-        #                 # short string
-        #                 return x.__repr__()
         else:
             class_name = describe_type(x)
             # TODO: add all types
@@ -620,7 +604,7 @@ def describe_value_multiline(x):
             try:
                 # This fails for classes
                 final = "{}\n{}".format(desc, x.__repr__())
-            except: # XXX
+            except:  # XXX
                 final = "%s\n%s" % (desc, x)
 
             return final

@@ -1,17 +1,4 @@
 
-# class Extra:
-#     loading = False
-#
-# def load_extra():
-#     if not Extra.loading:
-#         Extra.loading = True
-# #         from . import useful_contracts
-#         from .library import miscellaneous_aliases
-#         # And after everything else is loaded, load the  utils
-#     else:
-#         print('already loading...')
-    
-
 def parse_contract_string_actual(string):
     from .interface import (Contract, ContractDefinitionError, ContractSyntaxError,
         Where)
@@ -39,5 +26,3 @@ def parse_contract_string_actual(string):
         where = Where(string, character=e.loc)
         msg = '%s' % e
         raise ContractSyntaxError(msg, where=where)
-
-

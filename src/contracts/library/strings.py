@@ -1,11 +1,10 @@
 from ..interface import Contract, ContractNotRespected
-from ..syntax import (add_contract, W, contract_expression, O, add_keyword,
-    Keyword, Literal)
+from ..syntax import (
+    add_contract, W, contract_expression,
+    O, add_keyword, Keyword, Literal)
 
 
-# Base class for string contracts
 class StringBase(Contract):
-
     def __init__(self, length=None, where=None):
         Contract.__init__(self, where)
         self.length = length
@@ -37,35 +36,13 @@ class StringBase(Contract):
         return cls(length, where=where)
 
 
-import sys
-if sys.version_info[0] == 3:  # Python 3
-
-    __all__ = ['String']
-
-    class String(StringBase):
-        KEYWORDS = ['str', 'string', 'unicode']
-        TYPE = str
-        DESCRIPTION = "a string"
+__all__ = ['String']
 
 
-else:  # Python 2.x
-
-    __all__ = ['String', 'AnsiString', 'UnicodeString']
-
-    class String(StringBase):
-        KEYWORDS = ['string']
-        TYPE = basestring
-        DESCRIPTION = "an ANSI or Unicode string"
-
-    class AnsiString(StringBase):
-        KEYWORDS = ['str']
-        TYPE = str
-        DESCRIPTION = "an ANSI string"
-
-    class UnicodeString(StringBase):
-        KEYWORDS = ['unicode']
-        TYPE = unicode
-        DESCRIPTION = "a Unicode string"
+class String(StringBase):
+    KEYWORDS = ['str', 'string', 'unicode']
+    TYPE = str
+    DESCRIPTION = "a string"
 
 
 for cls in StringBase.__subclasses__():

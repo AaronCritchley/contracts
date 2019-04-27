@@ -24,8 +24,7 @@ class Extension(Contract):
         if self.kwargs:
             ks = sorted(self.kwargs)
             inside.extend(["%s=%s" % (k, self.kwargs[k]) for k in ks])
-        
-        
+
         s = self.identifier
     
         if inside:
@@ -59,13 +58,11 @@ class Extension(Contract):
 
         if not identifier in Extension.registrar:
             raise ParseException('Unknown extension contract %r' % identifier)
-        
-        # from contracts.library.separate_context import SeparateContext
-        
+
         contract_ext = Extension.registrar[identifier]
         
         if isinstance(contract_ext, CheckCallable):
-            callable_thing = contract_ext.callable 
+            callable_thing = contract_ext.func
          
             test_args = ('value',) + args
             from contracts.inspection import check_callable_accepts_these_arguments, InvalidArgs
@@ -82,7 +79,7 @@ class Extension(Contract):
         where = W(s, loc)
         return Extension(identifier, where, args, kwargs)
 
-    # We want to be pickable so we do not save self.contract
+    # We want to be picklable so we do not save self.contract
     # which might point to a lambda
     def __getstate__(self):
         return {'identifier': self.identifier,
@@ -98,8 +95,8 @@ class Extension(Contract):
 
 class CheckCallable(Contract):
 
-    def __init__(self, callable):
-        self.callable = callable
+    def __init__(self, func):
+        self.func = func
         Contract.__init__(self, where=None)
 
     def check_contract(self, context, value, silent):
@@ -107,7 +104,7 @@ class CheckCallable(Contract):
         args = context.get('args', tuple())
         kwargs = context.get('kwargs', {})
         try:
-            result = self.callable(value, *args, **kwargs)
+            result = self.func(value, *args, **kwargs)
         except allowed as e:  # failed
             raise ContractNotRespected(self, str(e), value, context)
 
@@ -116,24 +113,25 @@ class CheckCallable(Contract):
             pass
         elif result == False:
             msg = ('Value does not pass criteria of %s() (module: %s).' %
-                   (get_callable_name(self.callable), 
-                    get_callable_module(self.callable)))
+                   (get_callable_name(self.func),
+                    get_callable_module(self.func)))
             raise ContractNotRespected(self, msg, value, context)
         else:
             msg = ('I expect that %r returns either True, False, None; or '
                    'raises a ValueError exception. Instead, I got %s.' %
-                   (self.callable, describe_value(value)))
+                   (self.func, describe_value(value)))
             raise ValueError(msg)
 
     def __repr__(self):
         """ Note: this contract is not representable, but anyway it is
             only used by Extension, which serializes using the identifier. """
-        return 'CheckCallable(%r)' % self.callable
+        return 'CheckCallable(%r)' % self.func
 
     def __str__(self):
         """ Note: this contract is not representable, but anyway it is only
             used by Extension, which serializes using the identifier. """
         return get_callable_name(callable)
+
 
 def get_callable_name(c):
     """ Get a displayable name for the callable even if __name__
@@ -143,17 +141,19 @@ def get_callable_name(c):
     except:
         return str(c)
 
+
 def get_callable_module(c):
     try:
         return c.__module__
     except:
         return '(No __module__ attr)'
-    
+
+
 def describe_callable(c):
     return get_callable_name(c) + ' module: %s' % get_callable_module(c)
 
-class CheckCallableWithSelf(Contract):
 
+class CheckCallableWithSelf(Contract):
     def __init__(self, callable):  # @ReservedAssignment
         self.callable = callable
         Contract.__init__(self, where=None)
@@ -175,9 +175,10 @@ class CheckCallableWithSelf(Contract):
             raise ContractNotRespected(self, str(e), value, context)
 
         if result in [None, True]:
-            # passed
+            # Why do we have these two items meaning 'pass'?
+            # This goes against best practice.
             pass
-        elif result == False:
+        elif not result:
             msg = ('Value does not pass criteria of %s.' %
                    describe_callable(self.callable))
             raise ContractNotRespected(self, msg, value, context)
@@ -198,7 +199,6 @@ class CheckCallableWithSelf(Contract):
         return 'function %s()' % get_callable_name(self.callable)
 
 
-
 w = Word('_' + alphanums)
 arg = rvalue.copy()
 
@@ -210,6 +210,7 @@ def build_args_kwargs(s, loc, tokens):
     return (tuple(t for t in tokens if not isinstance(t, dict)),
             dict((k, v) for t in tokens if isinstance(t, dict)
                  for k, v in t.items()))
+
 
 arglist = delimitedList(kwarg | arg)
 arglist.setParseAction(build_args_kwargs)

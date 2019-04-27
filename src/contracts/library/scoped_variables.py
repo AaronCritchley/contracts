@@ -1,8 +1,11 @@
+
+import inspect
+
+from pyparsing import Word, alphanums
+
 from ..interface import ExternalScopedVariableNotFound
 from ..syntax import S, W
 from ..utils import ignore_typeerror
-from pyparsing import Word, alphanums
-import inspect
 from contracts.library.types_misc import CheckType
 
 
@@ -69,25 +72,6 @@ def _lookup_from_calling_scope(token):
     raise RuntimeError("Cound not find a scope to lookup %s" % token)
 
 
-# class ScopedVariableRef(RValue):
-#
-#     """
-#     A variable whose value is extracted by name from the scope where the spec is defined.
-#     """
-#
-#     def __init__(self, value, where=None):
-#         self.where = where
-#         self.value = value
-#
-#     def eval(self, context):
-#         return self.value
-#
-#     def __repr__(self):
-#         return "ScopedVariableRef(%r)" % self.value
-#
-#     def __str__(self):
-#         return str(self.value)
-
 @ignore_typeerror
 def scoped_parse_action(s, loc, tokens):
     assert len(tokens) == 1
@@ -103,10 +87,6 @@ def scoped_parse_action(s, loc, tokens):
     else:
         return SimpleRValue(value=val, where=where, representation=s)
 
+
 scoped_variables = (S('$') + Word(alphanums + '_'))
 scoped_variables_ref = scoped_variables.setParseAction(scoped_parse_action)
-
-
-
-
-

@@ -5,7 +5,6 @@ import warnings
 
 import six
 
-from .interface import describe_type, describe_value  # @UnusedImport # old interface
 
 __all__ = [
     'indent',
@@ -14,6 +13,7 @@ __all__ = [
     'raise_wrapped',
     'raise_desc',
     'check_isinstance',
+    'ignore_typeerror'
 ]
 
 
@@ -25,8 +25,8 @@ def indent(s, prefix, first=None):
     try:
         lines = s.split('\n')
     except UnicodeDecodeError:
-        print(type(s)) # XXX
-        print(s) # XXX
+        print(type(s))  # XXX
+        print(s)  # XXX
         lines = [s]
     if not lines:
         return u''
@@ -39,7 +39,7 @@ def indent(s, prefix, first=None):
     prefix = ' ' * (m - len(prefix)) + prefix
     first = ' ' * (m - len(first)) + first
 
-    # differnet first prefix
+    # different first prefix
     res = [u'%s%s' % (prefix, line.rstrip()) for line in lines]
     res[0] = u'%s%s' % (first, lines[0].rstrip())
     return '\n'.join(res)
@@ -173,9 +173,7 @@ def raise_wrapped(etype, e, msg, compact=False, **kwargs):
         from six import raise_from
         msg += '\n' + indent(e, '| ')
         e2 = etype(_format_exc(msg, **kwargs))
-        # e2 = raise_wrapped_make(etype, e, msg, compact=compact, **kwargs)
         raise_from(e2, e)
-        # raise e2
     else:
         e2 = raise_wrapped_make(etype, e, msg, compact=compact, **kwargs)
         raise e2
@@ -189,10 +187,6 @@ def raise_wrapped_make(etype, e, msg, compact=False, **kwargs):
     if kwargs:
         s += '\n' + format_obs(kwargs)
 
-    # import sys
-    # if sys.version_info[0] >= 3:
-    #     es = e.__str__()
-    # else:
     if compact:
         es = e.__str__()
     else:
@@ -201,6 +195,7 @@ def raise_wrapped_make(etype, e, msg, compact=False, **kwargs):
     s += '\n' + indent(es.strip(), '| ')
 
     return etype(s)
+
 
 def _format_exc(msg, **kwargs):
     check_isinstance(msg, six.text_type)
@@ -230,47 +225,6 @@ def raise_desc(etype, msg, args_first=False, **kwargs):
 
     raise etype(s)
 
-
-#
-#
-#
-# def format_tb(tb, limit = None):
-#     """A shorthand for 'format_list(extract_stack(f, limit))."""
-#     return format_list(extract_tb(tb, limit))
-#
-# def extract_tb(tb, limit = None):
-#     """Return list of up to limit pre-processed entries from traceback.
-#
-#     This is useful for alternate formatting of stack traces.  If
-#     'limit' is omitted or None, all entries are extracted.  A
-#     pre-processed stack trace entry is a quadruple (filename, line
-#     number, function name, text) representing the information that is
-#     usually printed for a stack trace.  The text is a string with
-#     leading and trailing whitespace stripped; if the source is not
-#     available it is None.
-#     """
-#     if limit is None:
-#         if hasattr(sys, 'tracebacklimit'):
-#             limit = sys.tracebacklimit
-#     list = []
-#     n = 0
-#     while tb is not None and (limit is None or n < limit):
-#         f = tb.tb_frame
-#         lineno = tb.tb_lineno
-#         co = f.f_code
-#         filename = co.co_filename
-#         name = co.co_name
-#         linecache.checkcache(filename)
-#         line = linecache.getline(filename, lineno, f.f_globals)
-#         if line: line = line.strip()
-#         else: line = None
-#         list.append((filename, lineno, name, line))
-#         tb = tb.tb_next
-#         n = n+1
-#     return list
-
-
-# from decorator import decorator  # @UnresolvedImport
 
 def ignore_typeerror(f):
     """ Recasts TypeError as Exception; otherwise pyparsing gets confused. """

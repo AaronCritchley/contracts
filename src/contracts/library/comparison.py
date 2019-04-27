@@ -49,8 +49,9 @@ class CheckOrder(Contract):
 
         if pure_equality:
             # but we want them to be either numbers or same type
-            if (not (isnumber(val1) and isnumber(val2))) and \
-                (not isinstance(val1, val2.__class__)):
+            not_numeric = not (isnumber(val1) and isnumber(val2))
+            not_siblings = not isinstance(val1, val2.__class__)
+            if not_numeric and not_siblings:
                 msg = ("I won't let you compare two different types if they "
                        "are not numbers (%s,%s)" % (type(val1), type(val2)))
                 raise ContractNotRespected(self, msg, (val1, val2), context)

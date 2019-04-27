@@ -21,13 +21,8 @@ from .variables import (BindVariable, VariableRef, misc_variables_contract,
                         int_variables_ref)
 from .simple_values import EqualTo, SimpleRValue
 
-try:
-    import numpy
-except ImportError:  # pragma: no cover
-    pass
-else:
-    from .array import (ShapeContract, Shape, Array, ArrayConstraint, DType,
-                        dtype, ArrayOR, ArrayAnd)
+from .array import (ShapeContract, Shape, Array, ArrayConstraint, DType,
+                    ArrayOR, ArrayAnd)
 
 from .extensions import (identifier_expression, identifier_contract,
                          Extension, CheckCallable)
