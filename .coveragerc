@@ -1,6 +1,5 @@
 [run]
 branch = True
-source = src/contracts
 
 [report]
 fail_under = 80
