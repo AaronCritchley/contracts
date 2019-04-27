@@ -13,7 +13,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-long_description = read('README.md')
+long_description = read('readme.md')
 
 
 def get_version(filename):
