@@ -1,8 +1,11 @@
+[![Build Status](https://travis-ci.org/bluecoveltd/contracts.svg?branch=master)](https://travis-ci.org/bluecoveltd/contracts)
+[![codecov](https://codecov.io/gh/bluecoveltd/contracts/branch/master/graph/badge.svg)](https://codecov.io/gh/bluecoveltd/contracts)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b7e92327c90e4fa895d9dc53224053b2)](https://www.codacy.com/app/AaronCritchley/contracts?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bluecoveltd/contracts&amp;utm_campaign=Badge_Grade)
 
-# Bluecove Contracts
+# BlueCove Contracts
 
 This is a hard fork of the PyContracts library, the original version
-of which can be found [here](https://github.com/AndreaCensi/contracts)
+of which can be found [here](https://github.com/AndreaCensi/contracts).
 
 Modifications we have made:
 
