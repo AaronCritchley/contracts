@@ -3,17 +3,15 @@ import os
 from setuptools import setup, find_packages
 
 description = (
-    'blue-contracts is a hard fork of the PyContracts library'
+    'PyTreaty is a hard fork of the PyContracts library'
     'from Andrea Censi. This fork has been updated to allow '
     'multiple contract definitions on a function, as well as'
-    'removing Python 2.x support and other updates.')
+    'removing Python 2.x support and other updates.'
+)
 
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
-
-long_description = read('readme.md')
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 
 def get_version(filename):
@@ -33,29 +31,31 @@ def get_version(filename):
 
 version = get_version(filename='contracts/__init__.py')
 
-setup(name='bluecove-contracts',
-      author="BlueCove Developers",
-      url='http://github.com/bluecoveltd/contracts',
+setup(
+    name='pytreaty',
+    author="BlueCove Developers",
+    url='http://github.com/bluecoveltd/contracts',
 
-      description=description,
-      long_description=long_description,
-      keywords="type checking, value checking, contracts",
-      license="LGPL",
+    description=description,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    keywords="type checking, value checking, contracts",
+    license="LGPL",
 
-      classifiers=[
-          'Development Status :: 5 - Production/Stable',
-          'Intended Audience :: Developers',
-          'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
-          'Topic :: Software Development :: Quality Assurance',
-          'Topic :: Software Development :: Documentation',
-          'Topic :: Software Development :: Testing'
-      ],
+    classifiers=[
+      'Development Status :: 4 - Beta',
+      'Intended Audience :: Developers',
+      'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+      'Topic :: Software Development :: Quality Assurance',
+      'Topic :: Software Development :: Documentation',
+      'Topic :: Software Development :: Testing'
+    ],
 
-      version=version,
-      download_url='http://github.com/bluecoveltd/contracts/tarball/%s' % version,
+    version=version,
+    download_url='http://github.com/bluecoveltd/contracts/tarball/%s' % version,
 
-      packages=find_packages(exclude=['tests', 'tests.*']),
-      install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
-      tests_require=['pytest'],
-      entry_points={},
-      )
+    packages=find_packages(exclude=['tests', 'tests.*']),
+    install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
+    tests_require=['pytest'],
+    entry_points={},
+)
