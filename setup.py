@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 description = (
     'PyTreaty is a hard fork of the PyContracts library'
     'from Andrea Censi. This fork has been updated to allow '
-    'multiple contract definitions on a function, as well as'
+    'multiple contract definitions on a function, as well as '
     'removing Python 2.x support and other updates.'
 )
 
@@ -27,6 +27,11 @@ def get_version(filename):
     if version is None:
         raise ValueError(filename)
     return version
+
+
+def read_reqs(filename):
+    with open(filename) as file:
+        return file.readlines()
 
 
 version = get_version(filename='contracts/__init__.py')
@@ -55,7 +60,7 @@ setup(
     download_url='http://github.com/bluecoveltd/contracts/tarball/%s' % version,
 
     packages=find_packages(exclude=['tests', 'tests.*']),
-    install_requires=['pyparsing', 'decorator', 'six', 'future', 'numpy'],
-    tests_require=['pytest'],
+    install_requires=read_reqs('requirements.txt'),
+    tests_require=read_reqs('requirements-dev.txt'),
     entry_points={},
 )
