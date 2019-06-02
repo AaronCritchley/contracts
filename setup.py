@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 description = (
-    'PyTreaty is a hard fork of the PyContracts library'
+    'PyTreaty is a hard fork of the PyContracts library '
     'from Andrea Censi. This fork has been updated to allow '
     'multiple contract definitions on a function, as well as '
     'removing Python 2.x support and other updates.'
