@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/bluecoveltd/contracts.svg?branch=master)](https://travis-ci.org/bluecoveltd/contracts)
-[![codecov](https://codecov.io/gh/bluecoveltd/contracts/branch/master/graph/badge.svg)](https://codecov.io/gh/bluecoveltd/contracts)
+[![codecov Badge](https://codecov.io/gh/bluecoveltd/contracts/branch/master/graph/badge.svg)](https://codecov.io/gh/bluecoveltd/contracts)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b7e92327c90e4fa895d9dc53224053b2)](https://www.codacy.com/app/AaronCritchley/contracts?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bluecoveltd/contracts&amp;utm_campaign=Badge_Grade)
+[![PyPI Badge](https://img.shields.io/pypi/v/pytreaty.svg)](https://pypi.org/project/pytreaty/)
+
 
 # PyTreaty
 
