@@ -2,7 +2,6 @@
 import collections
 
 import numpy as np
-from past.builtins import xrange
 
 from ..interface import Contract, ContractNotRespected
 from ..syntax import (
@@ -27,7 +26,7 @@ class Seq(Contract):
 
             if self.elements_contract is not None:
                 n = value.size
-                for i in xrange(n):
+                for i in range(n):
                     element = value.flat[i]
                     if ((element.dtype == np.int32) or
                         (element.dtype == np.int64)):
