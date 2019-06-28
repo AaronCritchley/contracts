@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import sys
 import types
 from collections import defaultdict
+from textwrap import dedent
 from typing import List
 
 import six
@@ -89,49 +90,60 @@ def check_param_is_string(x):
 # TODO: add decorator-specific exception
 
 
-def contract_decorator(*arg, **kwargs):
+def contract_decorator(
+    *args,
+    _evaluate_docstring=True,
+    _evaluate_annotations=True,
+    **kwargs
+):
     """
-        Decorator for adding contracts to functions.
+    Decorator for adding contracts to functions.
 
-        It is smart enough to support functions with variable number of
-        arguments and keyword arguments.
+    It is smart enough to support functions with variable number of
+    arguments and keyword arguments.
 
-        There are three ways to specify the contracts. In order of precedence:
+    There are three ways to specify the contracts. All contracts will be evaluated,
+    unless directed to behave otherwise via _should_evaluate_{docstring/annotations}:
 
-        - As arguments to this decorator. For example: ::
+    - As arguments to this decorator. For example: ::
 
-              @contract(a='int,>0',b='list[N],N>0',returns='list[N]')
-              def my_function(a, b):
-                  # ...
-                  pass
+          @contract(a='int,>0',b='list[N],N>0',returns='list[N]')
+          def my_function(a, b):
+              # ...
+              pass
 
-        - As annotations (supported only in Python 3): ::
+    - As annotations: ::
 
-              @contract
-              def my_function(a:'int,>0', b:'list[N],N>0') -> 'list[N]':
-                  # ...
-                  pass
+          @contract
+          def my_function(a:'int,>0', b:'list[N],N>0') -> 'list[N]':
+              # ...
+              pass
 
-        - Using ``:type:`` and ``:rtype:`` tags in the function's docstring: ::
+    - Using ``:type:`` and ``:rtype:`` tags in the function's docstring: ::
 
-              @contract
-              def my_function(a, b):
-                  """
+          @contract
+          def my_function(a, b):
+    """
     # OK, this is black magic. You are not expected to understand this.
-    if arg:
-        if isinstance(arg[0], types.FunctionType):
+    if args:
+        if isinstance(args[0], types.FunctionType):
             # We were called without parameters
-            function = arg[0]
+            function = args[0]
             if all_disabled():
                 return function
             try:
-                return contracts_decorate(function, **kwargs)
+                return contracts_decorate(
+                    function,
+                    _evaluate_docstring=_evaluate_docstring,
+                    _evaluate_annotations=_evaluate_annotations,
+                    **kwargs
+                )
             except ContractSyntaxError as es:
                 # Erase the stack
                 raise ContractSyntaxError(es.error, es.where)
         else:
             msg = ('I expect that contracts() is called with '
-                   'only keyword arguments (passed: %r)' % arg)
+                   'only keyword arguments (passed: %r)' % args)
             raise ContractException(msg)
     else:
         # !!! Do not change "tmp_wrap" name; we need it for the definition
@@ -147,7 +159,12 @@ def contract_decorator(*arg, **kwargs):
 
             def tmp_wrap(f):  # do not change name (see above)
                 try:
-                    return contracts_decorate(f, **kwargs)
+                    return contracts_decorate(
+                        f,
+                        _evaluate_docstring=_evaluate_docstring,
+                        _evaluate_annotations=_evaluate_annotations,
+                        **kwargs
+                    )
                 except ContractSyntaxError as e:
                     msg = u"Cannot decorate function %s:" % f.__name__
                     from .utils import indent
@@ -162,35 +179,42 @@ def contract_decorator(*arg, **kwargs):
         return tmp_wrap
 
 
-def contracts_decorate(function_, modify_docstring=True, **kwargs):
-    """ An explicit way to decorate a given function.
-        The decorator :py:func:`decorate` calls this function internally.
+def contracts_decorate(
+    function_,
+    modify_docstring=True,
+    _evaluate_docstring=True,
+    _evaluate_annotations=True,
+    **kwargs
+):
+    """
+    An explicit way to decorate a given function.
+    The decorator :py:func:`decorate` calls this function internally.
     """
 
     if isinstance(function_, classmethod):
-        msg = """
-The function is a classmethod; PyContracts cannot decorate a classmethod.
-You can, however, first decorate a function and then turn it into a
-classmethod.
-
-For example, instead of doing this:
-
-    class A():
-
-        @contract(a='>0')
-        @classmethod
-        def f(cls, a):
-            pass
-
-you can achieve the same goal by inverting the two decorators:
-
-    class A():
-
-        @classmethod
-        @contract(a='>0')
-        def f(cls, a):
-            pass
-"""
+        msg = dedent("""
+        The function is a classmethod; PyContracts cannot decorate a classmethod.
+        You can, however, first decorate a function and then turn it into a
+        classmethod.
+        
+        For example, instead of doing this:
+        
+            class A():
+        
+                @contract(a='>0')
+                @classmethod
+                def f(cls, a):
+                    pass
+        
+        you can achieve the same goal by inverting the two decorators:
+        
+            class A():
+        
+                @classmethod
+                @contract(a='>0')
+                def f(cls, a):
+                    pass
+        """)
         raise CannotDecorateClassmethods(msg)
 
     all_args = get_all_arg_names(function_)
@@ -222,7 +246,7 @@ you can achieve the same goal by inverting the two decorators:
     # Type Annotations section
     annotations = get_annotations(function_)
 
-    if annotations:
+    if _evaluate_annotations and annotations:
         if 'return' in annotations:
             returns.append(annotations['return'])
             del annotations['return']
@@ -235,13 +259,14 @@ you can achieve the same goal by inverting the two decorators:
     no_returns = not returns
     no_args = not len(accepts_dict)
     no_annotations = not len(annotations)
-    no_docstring = function_.__doc__ is None
+    # If we don't have a docstring, or we've been asked not to evaluate it, set this to False
+    no_docstring = function_.__doc__ is None or not _evaluate_docstring
     if no_returns and no_args and no_annotations and no_docstring:
         raise ContractException(
             'You did not specify a contract, nor I can '
             'find a docstring for %r.' % function_)
 
-    update_accepts, update_returns = parse_contracts_from_docstring(function_)
+    update_accepts, update_returns = parse_contracts_from_docstring(function_) if _evaluate_docstring else (dict(), None)
 
     for k, v in update_accepts.items():
         accepts_dict[k].append(v)
@@ -308,7 +333,7 @@ you can achieve the same goal by inverting the two decorators:
 
     # TODO: add rtype statements if missing
 
-    if modify_docstring:
+    if _evaluate_docstring and modify_docstring:
 
         def write_contract_as_rst(c):
             return '``%s``' % c

@@ -16,8 +16,19 @@ from .main import (check, fail, check_multiple, contract_decorator,
 
 # Just make them appear as belonging to the "contracts" Module
 # So that Eclipse and other IDEs will not get confused.
-def contract(*args, **kwargs):
-    return contract_decorator(*args, **kwargs)
+def contract(
+    *args,
+    _evaluate_docstring=True,
+    _evaluate_annotations=True,
+    **kwargs
+):
+    return contract_decorator(
+        *args,
+        _evaluate_docstring=_evaluate_docstring,
+        _evaluate_annotations=_evaluate_annotations,
+        **kwargs
+    )
+
 
 contract.__doc__ = contract_decorator.__doc__
 
