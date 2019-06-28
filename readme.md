@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/bluecoveltd/contracts/branch/master/graph/badge.svg)](https://codecov.io/gh/bluecoveltd/contracts)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b7e92327c90e4fa895d9dc53224053b2)](https://www.codacy.com/app/AaronCritchley/contracts?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bluecoveltd/contracts&amp;utm_campaign=Badge_Grade)
 
-# BlueCove Contracts
+# PyTreaty
 
 This is a hard fork of the PyContracts library, the original version
 of which can be found [here](https://github.com/AndreaCensi/contracts).
@@ -29,3 +29,11 @@ project is orphaned.
 There are also wider changes we want to make across the codebase, so we
 also crossed the threshold where it became viable to maintain our own
 codebase.
+
+### Thing to come
+
+We plan to continue to improve and support PyTreaty, some notable future
+improvements that are planned are:
+
+* Adding support for complex Python `typing` and custom type hints.
+* New and improved documentation.
