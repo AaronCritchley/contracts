@@ -228,7 +228,13 @@ def contracts_decorate(
 
         value = kwargs.pop('returns', None)
         if value:
-            returns.append(value)
+            # When called via ContractsMeta, value can sometimes be a list of checks, so we
+            # should extend the list instead of append.
+            # TODO: Investigate why this happens and refactor accordingly
+            if isinstance(value, (tuple, list)):
+                returns.extend(value)
+            else:
+                returns.append(value)
 
         for kw in kwargs:
             if not kw in all_args:
